@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PCCOE College Enquiry</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+<h1>PCCOE College</h1>
+<p>Student Enquiry Portal</p>
+</header>
+
+<nav>
+<a href="#">Home</a>
+<a href="#">Courses</a>
+<a href="#">Admissions</a>
+<a href="#">Contact</a>
+</nav>
+
+<div class="banner"></div>
+
+<div class="container">
+
+<h2>College Enquiry Form</h2>
+
+<div class="container">
+<div class="card">
+
+<form id="form">
+
+<label>Name</label>
+<input name="name" placeholder="Enter your name" required>
+
+<label>Email</label>
+<input name="email" type="email" placeholder="Enter your email" required>
+
+<label>Message</label>
+<textarea name="message" placeholder="Write your enquiry here" required></textarea>
+
+<button type="submit">Submit Enquiry</button>
+
+</form>
+
+</div>
+</div>
+
+<p id="msg"></p>
+
+<h3>Recent Enquiries</h3>
+<ul id="list"></ul>
+
+</div>
+
+<footer>
+<p>© 2026 ABC College | All Rights Reserved</p>
+</footer>
+
+<script>
+
+const form = document.getElementById("form")
+const msg = document.getElementById("msg")
+const list = document.getElementById("list")
+
+async function load(){
+ const res = await fetch("/api/enquiries")
+ const data = await res.json()
+
+ list.innerHTML = ""
+
+ data.forEach(e=>{
+  list.innerHTML += `<li><b>${e.name}</b>: ${e.message}</li>`
+ })
+}
+
+form.onsubmit = async (e)=>{
+ e.preventDefault()
+
+ const body = Object.fromEntries(new FormData(form))
+
+ const res = await fetch("/api/enquiries",{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify(body)
+ })
+
+ if(res.ok){
+  msg.innerText = "Enquiry Submitted Successfully"
+
+  setTimeout(()=>{
+   msg.innerText = ""
+  },3000)
+
+  form.reset()
+  load()
+ }
+ else{
+  msg.innerText = "Error submitting enquiry"
+ }
+}
+
+load()
+
+</script>
+
+</body>
+</html>
